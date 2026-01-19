@@ -1,31 +1,46 @@
 const min = 1;
 const max = 50;
-let answer = Math.floor(Math.random() * (max - min) + 1);
+const maxAttempts = 5;
+
+let answer = Math.floor(Math.random() * (max - min + 1)) + min;
 let attempts = 0;
-let userGuess;
-let winner = false;
-do {
-	console.log(answer);
-	userGuess = Number(prompt(`Guess a number between ${min} and ${max}`));
-	if (attempts >= 4) {
-		alert("You used maximum limit please restart game to get new chance");
-		break;
-	}
+
+const input = document.getElementById("guessNumber");
+const button = document.getElementById("button");
+const message = document.getElementById("attempts");
+const result = document.getElementById("result");
+const attemptsRemaining = document.getElementById("attemptsRemaining");
+
+button.onclick = function () {
+	const userGuess = Number(input.value);
+
 	if (isNaN(userGuess)) {
-		window.alert("Your guess is not a number");
-	} else if (userGuess < min || userGuess > max) {
-		window.alert(`Please enter a valid number between ${min} and ${max}`);
+		alert("Your guess is not a number");
+		return;
+	}
+
+	if (userGuess < min || userGuess > max) {
+		alert(`Enter number between ${min} and ${max}`);
+		return;
+	}
+
+	attempts++;
+
+	const remaining = maxAttempts - attempts;
+
+	if (userGuess < answer) {
+		message.textContent = `Too LOW! Remaining attempts: ${remaining}`;
+	} else if (userGuess > answer) {
+		message.textContent = `Too HIGH! Remaining attempts: ${remaining}`;
 	} else {
-		if (userGuess < answer) {
-			window.alert("To low, try again!");
-		} else if (userGuess > answer) {
-			window.alert("To high, try again");
-		}
-		attempts++;
+		result.style.color = "green";
+		result.textContent = `🎉 Correct! You guessed in ${attempts} attempts`;
+		button.disabled = true;
+		return;
 	}
-	if (userGuess === answer) {
-		winner = true;
-		window.alert(`CONGRATULATIONS!! Its took ${attempts} attemps`);
-		break;
+
+	if (attempts === maxAttempts) {
+		attemptsRemaining.textContent = "Game over! Refresh to try again.";
+		button.disabled = true;
 	}
-} while (!winner);
+};
